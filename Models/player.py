@@ -1,15 +1,13 @@
 import pygame
 from Models.utils import Utils
+from Models.Entity import Entity
 
 vec = pygame.math.Vector2
 
 
-class Player:
+class Player(Entity):
     def __init__(self, app, pos):
-        self.app = app
-        self.starting_pos = [pos.x, pos.y]
-        self.grid_pos = pos
-        self.pix_pos = self.get_pix_pos()
+        super().__init__(app, pos)
         self.direction = vec(1, 0)
         self.stored_direction = None
         self.able_to_move = True
@@ -57,11 +55,6 @@ class Player:
 
     def move(self, direction):
         self.stored_direction = direction
-
-    def get_pix_pos(self):
-        return vec((self.grid_pos[0] * self.app.cell_width) + Utils.TOP_BOTTOM_BUFFER // 2 + self.app.cell_width // 2,
-                   (self.grid_pos[1] * self.app.cell_height) +
-                   Utils.TOP_BOTTOM_BUFFER // 2 + self.app.cell_height // 2)
 
     def time_to_move(self):
         if int(self.pix_pos.x + Utils.TOP_BOTTOM_BUFFER // 2) % self.app.cell_width == 0:

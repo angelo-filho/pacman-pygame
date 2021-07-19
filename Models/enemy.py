@@ -1,16 +1,14 @@
 import pygame
 import random
 from Models.utils import Utils
+from Models.Entity import Entity
 
 vec = pygame.math.Vector2
 
 
-class Enemy:
+class Enemy(Entity):
     def __init__(self, app, pos, number):
-        self.app = app
-        self.grid_pos = pos
-        self.starting_pos = [pos.x, pos.y]
-        self.pix_pos = self.get_pix_pos()
+        super().__init__(app, pos)
         self.radius = int(self.app.cell_width//2.3)
         self.number = number
         self.colour = self.set_colour()
