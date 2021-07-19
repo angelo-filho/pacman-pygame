@@ -33,7 +33,7 @@ class App:
             if self.state == 'start':
                 self.start_events()
                 self.start_draw()
-            elif self.state == 'playing':
+            elif self.state == 'playing' or self.state == 'pause':
                 self.playing_events()
                 self.playing_update()
                 self.playing_draw()
@@ -89,27 +89,32 @@ class App:
     # PLAYING FUNCTIONS
 
     def playing_events(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:
-                    self.player.move(vec(-1, 0))
-                if event.key == pygame.K_RIGHT:
-                    self.player.move(vec(1, 0))
-                if event.key == pygame.K_UP:
-                    self.player.move(vec(0, -1))
-                if event.key == pygame.K_DOWN:
-                    self.player.move(vec(0, 1))
+        if self.state == 'playing':
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_LEFT:
+                        self.player.move(vec(-1, 0))
+                    if event.key == pygame.K_RIGHT:
+                        self.player.move(vec(1, 0))
+                    if event.key == pygame.K_UP:
+                        self.player.move(vec(0, -1))
+                    if event.key == pygame.K_DOWN:
+                        self.player.move(vec(0, 1))
+                    if event.key == pygame.K_p:
+                        self.state = 'pause'
+        else:
+            self.pause_events()
 
     def playing_update(self):
-        self.player.update()
-        for enemy in self.enemies:
-            enemy.update()
+        if self.state == 'playing':
+            self.player.update()
+            for enemy in self.enemies:
+                enemy.update()
 
-            if enemy.grid_pos == self.player.grid_pos:
-                self.remove_life()
-
+                if enemy.grid_pos == self.player.grid_pos:
+                    self.remove_life()
     def playing_draw(self):
         self.screen.fill(Utils.BLACK)
         self.screen.blit(self.background, (Utils.TOP_BOTTOM_BUFFER // 2, Utils.TOP_BOTTOM_BUFFER // 2))
@@ -121,6 +126,8 @@ class App:
         self.player.draw()
         for enemy in self.enemies:
             enemy.draw()
+        if self.state == 'pause':
+            self.pause_draw()
         pygame.display.update()
 
     def remove_life(self):
@@ -161,3 +168,19 @@ class App:
         Utils.draw_text(quit_text, self.screen, [
             Utils.WIDTH // 2, Utils.HEIGHT // 1.5], 36, (190, 190, 190), "arial", centered=True)
         pygame.display.update()
+
+
+    def pause_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+                self.state = 'playing'
+
+    def pause_draw(self):
+        Utils.draw_text("PAUSED", self.screen, [Utils.WIDTH // 2, Utils.HEIGHT // 2], 52, Utils.WHITE, "arial", centered=True)
+
+        
+
+        
+
