@@ -2,6 +2,7 @@ import pygame
 import random
 from Models.utils import Utils
 from Models.Entity import Entity
+from os.path import join
 
 vec = pygame.math.Vector2
 
@@ -11,13 +12,15 @@ class Enemy(Entity):
         super().__init__(app, pos)
         self.radius = int(self.app.cell_width//2.3)
         self.number = number
-        self.colour = self.set_colour()
+        self.images = self.set_colour()
         self.direction = vec(0, 0)
         self.personality = self.set_personality()
         self.target = None
         self.speed = self.set_speed()
+        self.currentimage = self.images[0]
 
     def update(self):
+        self.set_sprite()
         self.target = self.set_target()
         if self.target != self.grid_pos:
             self.pix_pos += self.direction * self.speed
@@ -31,8 +34,7 @@ class Enemy(Entity):
                             self.app.cell_height//2)//self.app.cell_height+1
 
     def draw(self):
-        pygame.draw.circle(self.app.screen, self.colour,
-                           (int(self.pix_pos.x), int(self.pix_pos.y)), self.radius)
+        self.app.screen.blit(self.currentimage,[self.pix_pos[0]-15,self.pix_pos[1]-15])
 
     def set_speed(self):
         if self.personality in ["speedy", "scared"]:
@@ -139,13 +141,29 @@ class Enemy(Entity):
 
     def set_colour(self):
         if self.number == 0:
-            return 255, 0, 0
-        if self.number == 1:
-            return 255, 184, 255
-        if self.number == 2:
-            return 0, 255, 255
-        if self.number == 3:
-            return 255, 184, 82
+            down = pygame.image.load(join("Assets", "redghostdown.png"))
+            up = pygame.image.load(join("Assets", "redghostup.png"))
+            right = pygame.image.load(join("Assets", "redghostright.png"))
+            left = pygame.image.load(join("Assets", "redghostleft.png"))
+            return down, up, right, left
+        elif self.number == 1:
+            down = pygame.image.load(join("Assets", "blueghostdown.png"))
+            up = pygame.image.load(join("Assets", "blueghostup.png"))
+            right = pygame.image.load(join("Assets", "blueghostright.png"))
+            left = pygame.image.load(join("Assets", "blueghostleft.png"))
+            return down, up, right, left
+        elif self.number == 2:
+            down = pygame.image.load(join("Assets", "pinkghostdown.png"))
+            up = pygame.image.load(join("Assets", "pinkghostup.png"))
+            right = pygame.image.load(join("Assets", "pinkghostright.png"))
+            left = pygame.image.load(join("Assets", "pinkghostleft.png"))
+            return down, up, right, left
+        elif self.number == 3:
+            down = pygame.image.load(join("Assets", "orangeghostdown.png"))
+            up = pygame.image.load(join("Assets", "orangeghostup.png"))
+            right = pygame.image.load(join("Assets", "orangeghostright.png"))
+            left = pygame.image.load(join("Assets", "orangeghostleft.png"))
+            return down, up, right, left
 
     def set_personality(self):
         if self.number == 0:
@@ -156,3 +174,16 @@ class Enemy(Entity):
             return "random"
         else:
             return "scared"
+
+    def set_sprite(self):
+        if self.direction == [1,0]:
+            self.currentimage = self.images[2]
+        elif self.direction == [0,1]:
+            self.currentimage = self.images[0]
+        elif self.direction == [-1,0]:
+            self.currentimage = self.images[3]
+        elif self.direction == [0,-1]:
+            self.currentimage = self.images[1]
+        
+
+

@@ -1,6 +1,7 @@
 import pygame
 from Models.utils import Utils
 from Models.Entity import Entity
+from os.path import join
 
 vec = pygame.math.Vector2
 
@@ -8,6 +9,13 @@ vec = pygame.math.Vector2
 class Player(Entity):
     def __init__(self, app, pos):
         super().__init__(app, pos)
+        self.spritesup = []
+        self.spritesdown = []
+        self.spritesleft = []
+        self.spritesright = []
+        self.load_sprite()
+        self.currentsprites = self.spritesright
+        self.currentindex = 0
         self.direction = vec(1, 0)
         self.stored_direction = None
         self.able_to_move = True
@@ -16,6 +24,8 @@ class Player(Entity):
         self.lives = 3
 
     def update(self):
+        self.set_sprite()
+        self.animation()
         if self.able_to_move:
             self.pix_pos += self.direction * self.speed
         if self.time_to_move():
@@ -30,8 +40,7 @@ class Player(Entity):
         self.on_coin()
 
     def draw(self):
-        pygame.draw.circle(self.app.screen, Utils.PLAYER_COLOUR, (int(self.pix_pos.x),
-                                                                  int(self.pix_pos.y)), self.app.cell_width // 2 - 2)
+        self.app.screen.blit(self.currentsprites[int(self.currentindex)], (int(self.pix_pos.x)-15,int(self.pix_pos.y)-20))
 
         # Drawing player lives
         for x in range(self.lives):
@@ -69,3 +78,33 @@ class Player(Entity):
             if vec(self.grid_pos + self.direction) == wall:
                 return False
         return True
+    
+    def load_sprite(self):
+        self.spritesright.append(pygame.image.load(join("Assets","pacright.png")))
+        self.spritesright.append(pygame.image.load(join("Assets","pacright2.png")))
+        self.spritesright.append(pygame.image.load(join("Assets","pacright3.png")))
+        self.spritesup.append(pygame.image.load(join("Assets","pacup.png")))
+        self.spritesup.append(pygame.image.load(join("Assets","pacup2.png")))
+        self.spritesup.append(pygame.image.load(join("Assets","pacup3.png")))
+        self.spritesleft.append(pygame.image.load(join("Assets","pacleft.png")))
+        self.spritesleft.append(pygame.image.load(join("Assets","pacleft2.png")))
+        self.spritesleft.append(pygame.image.load(join("Assets","pacleft3.png")))
+        self.spritesdown.append(pygame.image.load(join("Assets","pacdown.png")))
+        self.spritesdown.append(pygame.image.load(join("Assets","pacdown2.png")))
+        self.spritesdown.append(pygame.image.load(join("Assets","pacdown3.png")))
+
+    def animation(self):
+        self.currentindex += 0.2
+        if self.currentindex >= len(self.currentsprites):
+            self.currentindex = 0
+
+    def set_sprite(self):
+        if self.direction == [1,0]:
+            self.currentsprites = self.spritesright
+        elif self.direction == [0,1]:
+            self.currentsprites = self.spritesdown
+        elif self.direction == [-1,0]:
+            self.currentsprites = self.spritesleft
+        elif self.direction == [0,-1]:
+            self.currentsprites = self.spritesup
+        
